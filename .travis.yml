@@ -8,7 +8,7 @@ sudo: required
 
 env:
   global:
-    - CRATE_NAME=mdbook-open-on-gh
+    - CRATE_NAME=mdbook-open-git-repo
 
 matrix:
   include:
@@ -38,7 +38,7 @@ before_deploy:
 
 deploy:
   api_key:
-    secure: "AoH64WLXrjR031qYfgTFGNBd2EU5n2yi7CXW+Zmd67AaYPvpK2CLV5XJyWg0uDHcgrdn9hf+W3K1VX/mH1cKSc3LOsRchmOZAkHKk4AUyIHREOVLgzLMJjLfr/4VpC8gtdrLknYExnxSPF+aUm1fhUHfr8RXeuXqTeHlkdGoROQZKO5tDcFGTZBtIxr3Wjr5+TPuHIeooSusHIf1c+ygHaC+kJPib+eW6fl39Eb7HeTO+7SjbL9kgq9ikFN/iDay8RXkMi9Rz3RavcnVytq8Mxz0JJlzNhS8uSwKNjxHxmOjVWkNE2hQ1t+jovWYjLceo7+KwNPkmVWcDCbcBcb1eoyVdawuKqnkrL9y8qtqhixgFWH0lpchhSBelHLAQSQWSLRD2Mbri99Bl9ug0KjH8cBIkXDN5upH6sMWuPw2n1sBGKsK/UhRT1ppcA9a3WGEq90fRo1ENkQNayv16tqZHjeKVRI8vDQLqdsGP51l9NL4KBGw5mKxk2v9Lew9YO4zt3thFFdJUwZmN7qjKX+Dul6kjMhqUZaKpLliRyf06OhjO+0u1t4WAYhLIy3Dz/FTw+1kOnkD10g3GqYEj8TKfUebb1AB3kCa//i/TjkycX8zxCK7pAM4uIwch+J/cKU8u1vqV7U0ZXL20x83i6TWkNEIWwXZ9cWuuX0IaF5z9l0="
+    secure: "31KNbO2uiwpecxM1WeU/8A+ZlTY9Y+lyVzZpQLtoyor06jFhLv2uBNbaumOIX1uJrN9H6GKbItEa6WBupsMJUCAsidmBCkVjw3C34UFgOTiHOv+XahjIdMkoDirlHrUO/ihfMZKpuOMc29P7CwJT29BpY9eYNm7C0mNklgTJFuI8v1C0OIVLdNypQh5rk90hmtdpHKXUFWvU0oZUFc8YyZ+3g1MDp8KNLW9TyQotiJL9oEmIaU2Lm357IVT98db0E1gbX4Yz9DzyGZg6r+isDNwJW0AJIT1J7WCV1yaBvJAJluXm01LuSry3oayCQWGt7NM7fv56QsQhR/K2Pbb9EjlMBFIYGH6VdjTw2MLFgwtPfhCibmD6iGr4sQN638VTCNelpHiWBw4YNMZqenXwi0aQYTgPtwtjWXLbFm/WHW/fnHIsS+780R/IMulnkodGb6qC0/rfwz0E8MyHZPf0ac0Yu3oDrTxC/a0UlD64D528z824eBFmtKu3wdDs41K+KGt/jg/XL9XSomIMGVpiQzrk26/iqnQ05XPg5c/sr+OjcvniuCHowi3E/gFqW1q10lJh6msV/kqAwObhlruEyHJW4VKxPto6j9Pek2tJcijznT3VjNltIsccpHoWFFjnIkI5NGytrRatj3AIP9ideKe6D5jxbIxdxq+b+YLd7yI="
   file_glob: true
   file: $CRATE_NAME-$TRAVIS_TAG-$TARGET.*
   on:

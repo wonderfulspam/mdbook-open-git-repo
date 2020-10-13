@@ -17,9 +17,9 @@ main() {
 
     test -f Cargo.lock || cargo generate-lockfile
 
-    cross rustc --bin mdbook-open-on-gh --target $TARGET --release
+    cross rustc --bin $CRATE_NAME --target $TARGET --release
 
-    cp target/$TARGET/release/mdbook-open-on-gh $stage/
+    cp target/$TARGET/release/$CRATE_NAME $stage/
 
     cd $stage
     tar czf $src/$CRATE_NAME-$TRAVIS_TAG-$TARGET.tar.gz *

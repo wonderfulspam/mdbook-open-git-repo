@@ -5,7 +5,7 @@ environment:
   global:
     RUST_VERSION: stable
 
-    CRATE_NAME: mdbook-open-on-gh
+    CRATE_NAME: mdbook-open-git-repo
 
   matrix:
     # MSVC
@@ -33,13 +33,13 @@ test_script:
     )
 
 before_deploy:
-  - cargo rustc --target %TARGET% --release --bin mdbook-open-on-gh
+  - cargo rustc --target %TARGET% --release --bin mdbook-open-git-repo
   - ps: ci\before_deploy.ps1
 
 deploy:
   artifact: /.*\.zip/
   auth_token:
-    secure: "kTwxCDJYj3QdFwxUiCEnUN8VcFAfU6KJKttab4G9LPCkpxVNexMvFTwWkp7sgamP"
+    secure: "Yb2ix5xyP0gmsTjV3fxhG9ebTMnqCSGCllkk++zrTOppwbzq+2X1hQZGON6eLwKX"
   description: ''
   on:
     RUST_VERSION: stable
@@ -59,8 +59,6 @@ branches:
 notifications:
   - provider: Email
     on_build_success: false
-    on_build_failure: false
-    on_build_status_changed: false
 
 # Building is done in the test phase, so we disable Appveyor's build phase.
 build: false
