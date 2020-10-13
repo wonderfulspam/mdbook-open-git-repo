@@ -4,11 +4,20 @@ use mdbook::book::{Book, BookItem, Chapter};
 use mdbook::errors::Result;
 use mdbook::preprocess::{Preprocessor, PreprocessorContext};
 
+#[derive(Debug)]
+enum SourceControlHost {
+    GitHub,
+    GitLab,
+}
+
+static DEFAULT_LINK_TEXT: &str = "Edit this file on GitHub.";
+static DEFAULT_EDIT_TEXT: &str = "Found a bug? ";
+
 pub struct OpenOn;
 
 impl Preprocessor for OpenOn {
     fn name(&self) -> &str {
-        "open-on-gh"
+        "open-git-repo"
     }
 
     fn run(&self, ctx: &PreprocessorContext, mut book: Book) -> Result<Book> {
@@ -29,9 +38,64 @@ impl Preprocessor for OpenOn {
         };
         log::debug!("Repository URL: {}", repository_url);
 
-        if repository_url.find("github.com").is_none() {
-            return Ok(book);
-        }
+        let preprocessor_config = ctx.config.get_preprocessor(self.name());
+
+        let source_control_host: SourceControlHost = match preprocessor_config {
+            None => match repo_url_to_host(repository_url) {
+                Some(host) => host,
+                None => {
+                    eprintln!("Failed to determine source control host from URL. Please specify the host in your configuration");
+                    return Ok(book);
+                }
+            },
+            Some(preprocessor_config) => {
+                if let Some(toml::Value::String(host_string)) =
+                    preprocessor_config.get("source-control-host")
+                {
+                    match host_string.as_ref() {
+                        "github" => SourceControlHost::GitHub,
+                        "gitlab" => SourceControlHost::GitLab,
+                        _ => {
+                            eprintln!("Invalid source control host. Please consult configuration guide for valid values");
+                            return Ok(book);
+                        }
+                    }
+                } else {
+                    match repo_url_to_host(repository_url) {
+                        Some(host) => host,
+                        None => {
+                            eprintln!("Failed to determine source control host from URL. Please specify the host in your configuration");
+                            return Ok(book);
+                        }
+                    }
+                }
+            }
+        };
+        log::debug!("Source Control Host: {:?}", source_control_host);
+
+        let link_text = match preprocessor_config {
+            None => DEFAULT_LINK_TEXT,
+            Some(preprocessor_config) => {
+                if let Some(toml::Value::String(link_text)) = preprocessor_config.get("link-text") {
+                    link_text
+                } else {
+                    DEFAULT_LINK_TEXT
+                }
+            }
+        };
+        log::debug!("Link Text: {}", link_text);
+
+        let edit_text = match preprocessor_config {
+            None => DEFAULT_EDIT_TEXT,
+            Some(preprocessor_config) => {
+                if let Some(toml::Value::String(edit_text)) = preprocessor_config.get("edit-text") {
+                    edit_text
+                } else {
+                    DEFAULT_EDIT_TEXT
+                }
+            }
+        };
+        log::debug!("Edit Text: {}", edit_text);
 
         let branch = match ctx.config.get("output.html.git-branch") {
             None => "master",
@@ -48,7 +112,17 @@ impl Preprocessor for OpenOn {
 
             if let BookItem::Chapter(ref mut chapter) = *item {
                 res = Some(
-                    open_on(&git_root, &src_root, &repository_url, &branch, chapter).map(|md| {
+                    open_on(
+                        &git_root,
+                        &src_root,
+                        &repository_url,
+                        &branch,
+                        link_text,
+                        edit_text,
+                        &source_control_host,
+                        chapter,
+                    )
+                    .map(|md| {
                         chapter.content = md;
                     }),
                 );
@@ -59,16 +133,29 @@ impl Preprocessor for OpenOn {
     }
 }
 
+fn repo_url_to_host(repository_url: &str) -> Option<SourceControlHost> {
+    if repository_url.find("github.com").is_some() {
+        Some(SourceControlHost::GitHub)
+    } else if repository_url.find("gitlab.com").is_some() {
+        Some(SourceControlHost::GitLab)
+    } else {
+        None
+    }
+}
+
 fn open_on(
     git_root: &Path,
     src_root: &Path,
     base_url: &str,
     branch: &str,
+    link_text: &str,
+    edit_text: &str,
+    source_control_host: &SourceControlHost,
     chapter: &mut Chapter,
 ) -> Result<String> {
     let content = &chapter.content;
 
-    let footer_start = "<footer id=\"open-on-gh\">";
+    let footer_start = "<footer id=\"open-git-repo\">";
     if content.contains(footer_start) {
         return Ok(content.into());
     }
@@ -85,16 +172,29 @@ fn open_on(
     log::trace!("Chapter path: {}", path.display());
     log::trace!("Relative path: {}", relpath.display());
 
-    let url = format!("{}/edit/{}/{}", base_url, branch, relpath.display());
+    let edit_fragment = host_to_edit_uri_fragment(source_control_host);
+    let url = format!(
+        "{}/{}/{}/{}",
+        base_url,
+        edit_fragment,
+        branch,
+        relpath.display()
+    );
     log::trace!("URL: {}", url);
-
-    let link = format!("<a href=\"{}\">Edit this file on GitHub.</a>", url);
+    let link = format!("<a href=\"{}\">{}</a>", url, link_text);
     let content = format!(
-        "{}\n{}Found a bug? {}</footer>",
-        content, footer_start, link
+        "{}\n{}{}{}</footer>",
+        content, footer_start, edit_text, link
     );
 
     Ok(content)
+}
+
+fn host_to_edit_uri_fragment(source_control_host: &SourceControlHost) -> &str {
+    match source_control_host {
+        SourceControlHost::GitHub => "edit",
+        SourceControlHost::GitLab => "-/edit",
+    }
 }
 
 fn find_git(path: &Path) -> Option<PathBuf> {

@@ -1,15 +1,15 @@
 use clap::{crate_version, App, Arg, ArgMatches, SubCommand};
 use mdbook::errors::Error;
 use mdbook::preprocess::{CmdPreprocessor, Preprocessor};
-use mdbook_open_on_gh::OpenOn;
+use mdbook_open_git_repo::OpenOn;
 
 use std::io;
 use std::process;
 
 pub fn make_app() -> App<'static, 'static> {
-    App::new("mdbook-open-on-gh")
+    App::new("mdbook-open-git-repo")
         .version(crate_version!())
-        .about("mdbook preprocessor to add links to open the page on GitHub")
+        .about("mdbook preprocessor to add links to open the page for editing")
         .subcommand(
             SubCommand::with_name("supports")
                 .arg(Arg::with_name("renderer").required(true))
@@ -35,7 +35,7 @@ fn handle_preprocessing() -> Result<(), Error> {
 
     if ctx.mdbook_version != mdbook::MDBOOK_VERSION {
         eprintln!(
-            "Warning: The mdbook-open-on-gh preprocessor was built against version \
+            "Warning: The mdbook-open-git-repo preprocessor was built against version \
              {} of mdbook, but we're being called from version {}",
             mdbook::MDBOOK_VERSION,
             ctx.mdbook_version
