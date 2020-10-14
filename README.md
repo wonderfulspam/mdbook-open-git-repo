@@ -1,11 +1,11 @@
 # mdbook-open-git-repo
 
 A preprocessor for [mdbook][] to add an edit link on every page. Forked and adapted from
-[mdbook-open-git-repo][] to add support for other platforms than github.com such as a
+[mdbook-open-on-gh][] to add support for other platforms than github.com such as a
 self-hosted GitLab instance.
 
 [mdbook]: https://github.com/rust-lang/mdBook
-[mdbook-open-git-repo]: https://github.com/badboy/mdbook-open-on-gh
+[mdbook-open-on-gh]: https://github.com/badboy/mdbook-open-on-gh
 
 It adds a customisable link (default: "Edit this file on GitHub.") on the bottom
 of every page, linking directly to the source file. It uses the configured
@@ -43,7 +43,7 @@ source-control-host = "gitlab"
 The default content generated is the following:
 
 ```
-Found a bug? <a href="/link/to/edit/page">Edit this file on GitHub.</a>
+Found a bug? <a href="https://git.host.com/repo/project/branch/edit/chapter.md">Edit this file on GitHub.</a>
 ```
 
 Both the text before and inside the `<a>` tag may be customised:
