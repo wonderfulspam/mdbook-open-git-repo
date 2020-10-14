@@ -1,5 +1,9 @@
 # mdbook-open-git-repo
 
+[![Latest version](https://img.shields.io/crates/v/mdbook-open-git-repo.svg)](https://crates.io/crates/mdbook-open-git-repo)
+![License](https://img.shields.io/crates/l/mdbook-open-git-repo.svg)
+[![Build Status](https://travis-ci.org/wonderfulspam/mdbook-open-git-repo.svg?branch=master)](https://travis-ci.org/wonderfulspam/mdbook-open-git-repo)
+
 A preprocessor for [mdbook][] to add an edit link on every page. Forked and adapted from
 [mdbook-open-on-gh][] to add support for other platforms than github.com such as a
 self-hosted GitLab instance.
@@ -13,8 +17,8 @@ of every page, linking directly to the source file. It uses the configured
 
 ## Installation
 
-At the current time, this repo is not published on crates.io. Grab a binary from the release page
-and place it somewhere in your `$PATH`.
+Install using Cargo or grab a binary from the release page and place it
+somewhere in your `$PATH`.
 
 Add it as a preprocessor to your `book.toml`:
 
@@ -57,7 +61,7 @@ link-text = "Fix it immediately!"
 Which would produce the following output:
 
 ```
-Something not right? <a href="/link/to/edit/page">Fix it immediately!</a>
+Something not right? <a href="https://git.host.com/repo/project/branch/edit/chapter.md">Fix it immediately!</a>
 ```
 
 
@@ -92,4 +96,4 @@ mdbook path/to/book
 ## License
 
 MPL. See [LICENSE](LICENSE).  
-Original code copyright (c) 2020 Jan-Erik Rediger <janerik@fnordig.de>.
+Original code Copyright (c) 2020 Jan-Erik Rediger <janerik@fnordig.de>.
